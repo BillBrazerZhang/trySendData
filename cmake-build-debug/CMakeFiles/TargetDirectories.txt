@@ -1,0 +1,3 @@
+/home/wenyu/Documents/trySendData/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/wenyu/Documents/trySendData/cmake-build-debug/CMakeFiles/trySendData.dir
+/home/wenyu/Documents/trySendData/cmake-build-debug/CMakeFiles/edit_cache.dir
