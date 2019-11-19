@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
         for(unsigned t=0;;t++) {
 
             // wait a bit and create random data
-            while (((double)clock())/CLOCKS_PER_SEC < starttime + t*0.01); // set the data frequency (now 100Hz)
+            while (((double)clock())/CLOCKS_PER_SEC < starttime + t*0.05); // set the data frequency (now 100Hz)
             float sample[18];
             for (int c=0;c<18;c++){
                 sample[c] = (float)((rand()%1500)/500.0-1.5)*5*((c%6)+1) + 20*(c%6);
