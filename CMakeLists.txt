@@ -3,9 +3,9 @@ project(trySendData)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(/home/wenyu/Documents/labstreaminglayer/build/install/include/)
+include_directories(/imu/labstreaminglayer/build/install/include/)
 
-file(GLOB LIBRARIES "/home/wenyu/Documents/labstreaminglayer/build/install/lib/*")
+file(GLOB LIBRARIES "/imu/labstreaminglayer/build/install/lib/*")
 
 add_executable(trySendData main.cpp)
 

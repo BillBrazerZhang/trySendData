@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/trySendData.dir/main.cpp.o  -o trySendData -Wl,-rpath,/imu/labstreaminglayer/build/install/lib /imu/labstreaminglayer/build/install/lib/liblsl64.so /imu/labstreaminglayer/build/install/lib/liblsl64.so.1.13.0 

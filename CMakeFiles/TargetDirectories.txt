@@ -1,0 +1,3 @@
+/imu/trySendData/CMakeFiles/rebuild_cache.dir
+/imu/trySendData/CMakeFiles/trySendData.dir
+/imu/trySendData/CMakeFiles/edit_cache.dir
