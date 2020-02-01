@@ -81,6 +81,7 @@ trySendData: CMakeFiles/trySendData.dir/main.cpp.o
 trySendData: CMakeFiles/trySendData.dir/build.make
 trySendData: /imu/labstreaminglayer/build/install/lib/liblsl64.so
 trySendData: /imu/labstreaminglayer/build/install/lib/liblsl64.so.1.13.0
+trySendData: /usr/lib/aarch64-linux-gnu/libiio.so
 trySendData: CMakeFiles/trySendData.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/imu/trySendData/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable trySendData"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/trySendData.dir/link.txt --verbose=$(VERBOSE)

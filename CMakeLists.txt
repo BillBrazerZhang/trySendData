@@ -9,4 +9,8 @@ file(GLOB LIBRARIES "/imu/labstreaminglayer/build/install/lib/*")
 
 add_executable(trySendData main.cpp)
 
+find_library(LIBIIO iio)
+
 target_link_libraries(trySendData ${LIBRARIES})
+
+target_link_libraries(trySendData ${LIBIIO}) 

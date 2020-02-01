@@ -4,6 +4,12 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <signal.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include <time.h>
 #include <math.h>
 #include <chrono>
@@ -12,6 +18,13 @@
 #include <string>
 #include <fstream>
 #include <iomanip>
+
+#ifdef __APPLE__
+#include <iio/iio.h>
+#else
+#include <iio.h>
+#endif
+
 using namespace std;
 
 /**
@@ -26,6 +39,8 @@ const char *channels[] = {"imu1_Ax","imu1_Ay","imu1_Az","imu1_Gx","imu1_Gy","imu
                           "imu2_Ax","imu2_Ay","imu2_Az","imu2_Gx","imu2_Gy","imu2_Gz",
                           "imu3_Ax","imu3_Ay","imu3_Az","imu3_Gx","imu3_Gy","imu3_Gz"};
 
+static struct iio_context *ctx = NULL;
+static struct iio_buffer *imubuf = NULL;
 int main(int argc, char* argv[]) {
     string name, type;
     if (argc != 3) {
@@ -36,6 +51,32 @@ int main(int argc, char* argv[]) {
         name = argv[1];
         type = argv[2];
     }
+
+    ctx = iio_create_default_context();
+
+    if(iio_context_find_device(ctx, "iio:device1"))
+        printf("Find iio:device1 succedded!\n");
+    if(iio_context_find_device(ctx, "iio:device4"))		
+	printf("How could that be?\n");
+    else
+	printf("Could not find iio:device4!\n");
+    struct iio_device *dev; 
+    dev = iio_context_find_device(ctx, "iio:device1");
+    struct iio_channel *ch = NULL;
+    ch = iio_device_find_channel(dev, "accel_x", false);
+    if (ch == NULL)
+        printf("Enabling channel accel_x failed!\n");
+    else
+        printf("Enabling channel accel_x succeeded!\n");
+    imubuf = iio_device_create_buffer(dev, 32, false);
+    if (imubuf = NULL)
+        printf("Enabling IMU buffers failed!\n");
+    else
+        printf("Enabling IMU buffers succeeded!\n");
+	
+
+
+
 
     ifstream inFreq("/sys/bus/iio/devices/iio:device1/in_accel_sampling_frequency");
     ifstream AScale("/sys/bus/iio/devices/iio:device1/in_accel_scale");
@@ -80,7 +121,7 @@ int main(int argc, char* argv[]) {
         for(unsigned t=0;;t++) {
 
             // wait a bit and create random data
-            while (((double)clock())/CLOCKS_PER_SEC < starttime + t*0.036); // set the data frequency (now 100Hz)
+            while (((double)clock())/CLOCKS_PER_SEC < starttime + t*0.36); // set the data frequency (now 100Hz)
             float sample[18];
 	    /*
             for (int c=0;c<18;c++){
@@ -88,66 +129,74 @@ int main(int argc, char* argv[]) {
                 std::cout << sample[c] << " ";
             }
 	    */
-	    ifstream imu1_Ax("/sys/bus/iio/devices/iio:device1/in_accel_x_raw");
-	    ifstream imu1_Ay("/sys/bus/iio/devices/iio:device1/in_accel_y_raw");
-	    ifstream imu1_Az("/sys/bus/iio/devices/iio:device1/in_accel_z_raw");
-	    ifstream imu1_Gx("/sys/bus/iio/devices/iio:device1/in_anglvel_x_raw");
-	    ifstream imu1_Gy("/sys/bus/iio/devices/iio:device1/in_anglvel_y_raw");
-	    ifstream imu1_Gz("/sys/bus/iio/devices/iio:device1/in_anglvel_z_raw");
-	    ifstream imu2_Ax("/sys/bus/iio/devices/iio:device2/in_accel_x_raw");
-	    ifstream imu2_Ay("/sys/bus/iio/devices/iio:device2/in_accel_y_raw");
-	    ifstream imu2_Az("/sys/bus/iio/devices/iio:device2/in_accel_z_raw");
-	    ifstream imu2_Gx("/sys/bus/iio/devices/iio:device2/in_anglvel_x_raw");
-	    ifstream imu2_Gy("/sys/bus/iio/devices/iio:device2/in_anglvel_y_raw");
-	    ifstream imu2_Gz("/sys/bus/iio/devices/iio:device2/in_anglvel_z_raw");
-	    ifstream imu3_Ax("/sys/bus/iio/devices/iio:device3/in_accel_x_raw");
-	    ifstream imu3_Ay("/sys/bus/iio/devices/iio:device3/in_accel_y_raw");
-	    ifstream imu3_Az("/sys/bus/iio/devices/iio:device3/in_accel_z_raw");
-	    ifstream imu3_Gx("/sys/bus/iio/devices/iio:device3/in_anglvel_x_raw");
-	    ifstream imu3_Gy("/sys/bus/iio/devices/iio:device3/in_anglvel_y_raw");
-	    ifstream imu3_Gz("/sys/bus/iio/devices/iio:device3/in_anglvel_z_raw");
-	    imu1_Ax >> sample[0];
-	    imu1_Ay >> sample[1];
-	    imu1_Az >> sample[2];
-	    imu1_Gx >> sample[3];
-	    imu1_Gy >> sample[4];
-	    imu1_Gz >> sample[5];
-	    imu2_Ax >> sample[6];
-	    imu2_Ay >> sample[7];
-	    imu2_Az >> sample[8];
-	    imu2_Gx >> sample[9];
-	    imu2_Gy >> sample[10];
-	    imu2_Gz >> sample[11];
-	    imu3_Ax >> sample[12];
-	    imu3_Ay >> sample[13];
-	    imu3_Az >> sample[14];
-	    imu3_Gx >> sample[15];
-	    imu3_Gy >> sample[16];
-	    imu3_Gz >> sample[17];
-	    imu1_Ax.close();
-	    imu1_Ay.close();
-	    imu1_Az.close();
-	    imu1_Gx.close();
-	    imu1_Gy.close();
-	    imu1_Gz.close();
-	    imu2_Ax.close();
-	    imu2_Ay.close();
-	    imu2_Az.close();
-	    imu2_Gx.close();
-	    imu2_Gy.close();
-	    imu2_Gz.close();
-	    imu3_Ax.close();
-	    imu3_Ay.close();
-	    imu3_Az.close();
-	    imu3_Gx.close();
-	    imu3_Gy.close();
-	    imu3_Gz.close();
+	   ssize_t rxn = iio_buffer_refill(imubuf);
+	   /* if (rxn < 0)
+	        printf("Error filling up IMU buffer!\n");
+	    else
+		printf("Filling up IMU buffer succeeded!\n"); */
+
+	    //ifstream imu1_Ax("/sys/bus/iio/devices/iio:device1/in_accel_x_raw");
+	    //ifstream imu1_Ay("/sys/bus/iio/devices/iio:device1/in_accel_y_raw");
+	    //ifstream imu1_Az("/sys/bus/iio/devices/iio:device1/in_accel_z_raw");
+	    //ifstream imu1_Gx("/sys/bus/iio/devices/iio:device1/in_anglvel_x_raw");
+	    //ifstream imu1_Gy("/sys/bus/iio/devices/iio:device1/in_anglvel_y_raw");
+	    //ifstream imu1_Gz("/sys/bus/iio/devices/iio:device1/in_anglvel_z_raw");
+	    //ifstream imu2_Ax("/sys/bus/iio/devices/iio:device2/in_accel_x_raw");
+	    //ifstream imu2_Ay("/sys/bus/iio/devices/iio:device2/in_accel_y_raw");
+	    //ifstream imu2_Az("/sys/bus/iio/devices/iio:device2/in_accel_z_raw");
+	    //ifstream imu2_Gx("/sys/bus/iio/devices/iio:device2/in_anglvel_x_raw");
+	    //ifstream imu2_Gy("/sys/bus/iio/devices/iio:device2/in_anglvel_y_raw");
+	    //ifstream imu2_Gz("/sys/bus/iio/devices/iio:device2/in_anglvel_z_raw");
+	    //ifstream imu3_Ax("/sys/bus/iio/devices/iio:device3/in_accel_x_raw");
+	    //ifstream imu3_Ay("/sys/bus/iio/devices/iio:device3/in_accel_y_raw");
+	    //ifstream imu3_Az("/sys/bus/iio/devices/iio:device3/in_accel_z_raw");
+	    //ifstream imu3_Gx("/sys/bus/iio/devices/iio:device3/in_anglvel_x_raw");
+	    //ifstream imu3_Gy("/sys/bus/iio/devices/iio:device3/in_anglvel_y_raw");
+	    //ifstream imu3_Gz("/sys/bus/iio/devices/iio:device3/in_anglvel_z_raw");
+	    //imu1_Ax >> sample[0];
+	    //imu1_Ay >> sample[1];
+	    //imu1_Az >> sample[2];
+	    //imu1_Gx >> sample[3];
+	    //imu1_Gy >> sample[4];
+	    //imu1_Gz >> sample[5];
+	    //imu2_Ax >> sample[6];
+	    //imu2_Ay >> sample[7];
+	    //imu2_Az >> sample[8];
+	    //imu2_Gx >> sample[9];
+	    //imu2_Gy >> sample[10];
+	    //imu2_Gz >> sample[11];
+	    //imu3_Ax >> sample[12];
+	    //imu3_Ay >> sample[13];
+	    //imu3_Az >> sample[14];
+	    //imu3_Gx >> sample[15];
+	    //imu3_Gy >> sample[16];
+	    //imu3_Gz >> sample[17];
+	    //imu1_Ax.close();
+	    //imu1_Ay.close();
+	    //imu1_Az.close();
+	    //imu1_Gx.close();
+	    //imu1_Gy.close();
+	    //imu1_Gz.close();
+	    //imu2_Ax.close();
+	    //imu2_Ay.close();
+	    //imu2_Az.close();
+	    //imu2_Gx.close();
+	    //imu2_Gy.close();
+	    //imu2_Gz.close();
+	    //imu3_Ax.close();
+	    //imu3_Ay.close();
+	    //imu3_Az.close();
+	    //imu3_Gx.close();
+	    //imu3_Gy.close();
+            //imu3_Gz.close();
 
 	    for(int i=0; i<3; i++){
 		for(int j=i*6; j<i*6+3; j++)
-	            sample[j] *= accScale;
+	            //sample[j] *= accScale;
+		    sample[j] = 0;
 	        for(int j=i*6+3; j<i*6+6; j++)
-		    sample[j] *= gyroScale;
+		    //sample[j] *= gyroScale;
+		    sample[j] = 0;
 	    }
 
 	    for(int c=0; c<18; c++)

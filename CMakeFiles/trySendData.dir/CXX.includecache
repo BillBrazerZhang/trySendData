@@ -6,13 +6,13 @@
 
 #IncludeRegexTransform: 
 
+/imu/labstreaminglayer/build/install/include/lsl/constants.h
+
 /imu/labstreaminglayer/build/install/include/lsl_c.h
 stdint.h
 -
-lsl_constants.h
-/imu/labstreaminglayer/build/install/include/lsl_constants.h
-
-/imu/labstreaminglayer/build/install/include/lsl_constants.h
+lsl/constants.h
+/imu/labstreaminglayer/build/install/include/lsl/constants.h
 
 /imu/labstreaminglayer/build/install/include/lsl_cpp.h
 string
@@ -37,6 +37,18 @@ iostream
 -
 stdio.h
 -
+stdbool.h
+-
+stdint.h
+-
+signal.h
+-
+assert.h
+-
+sys/time.h
+-
+unistd.h
+-
 time.h
 -
 math.h
@@ -52,5 +64,9 @@ string
 fstream
 -
 iomanip
+-
+iio/iio.h
+-
+iio.h
 -
 
